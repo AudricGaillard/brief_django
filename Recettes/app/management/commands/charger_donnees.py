@@ -2,10 +2,10 @@ import csv
 import os
 from django.conf import settings
 from django.core.management.base import BaseCommand
-from Recettes.models import Categorie, Recette  # Utilisation des classes exactes
+from Recettes.models import Categorie, Recette, Utilisateur  # Utilisation des classes exactes
 
 class Command(BaseCommand):
-    help = "Charge les catégories et les recettes depuis les fichiers CSV."
+    
 
     def handle(self):
         self.stdout.write("--- Debut du chargement des donnees ---")
@@ -65,4 +65,42 @@ class Command(BaseCommand):
                     print(f"Recette ajoutée : {recette.titre}")
 
         self.stdout.write(self.style.SUCCESS("Recettes chargees avec succes !"))
+
+
+        # =
+        # 3. CHARGEMENT DES UTILISATEURS
+        # =
+
+        chemin_utilisateurs = os.path.join(settings.BASE_DIR, 'donnees', 'recettes', 'utilisateurs.csv')
+        with open(chemin_utilisateurs, mode='r', encoding='utf-8') as fichier:
+            lecteur_csv = csv.DictReader(fichier)
+
+            for ligne in lecteur_csv:
+                # Verification de l'existence de l'utilisateur
+                # Le brief precise que l'email sert souvent de nom d'utilisateur ou d'identifiant unique
+                email = ligne['email']
+
+                utilisateur, cree = Utilisateur.objects.get_or_create(
+                    email=email,
+                    defaults={
+                        'username': email,  
+                        'prenom': ligne['prenom'],
+                        'nom': ligne['nom'],
+                        'role': ligne['role'],
+                        'regime': ligne.get('regime', '') 
+                    }
+                )
+
+                if cree:
+                    #  mot de passe securise exige : "demo1234"
+                    utilisateur.set_password("demo1234")
+                    utilisateur.save()
+                    print(f"Utilisateur créé : {utilisateur.email} (rôle: {utilisateur.role})")
+
+        self.stdout.write(self.style.SUCCESS("Utilisateurs chargés avec succès !"))
+
+
+
+
+
         self.stdout.write(self.style.SUCCESS("--- Chargement termine avec succes ! ---"))

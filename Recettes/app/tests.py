@@ -1,3 +1,5 @@
+# A EXECUTER AVEC : python manage.py test
+
 from django.test import TestCase
 
 # Create your tests here.

@@ -36,7 +36,11 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    # Applications du projet
     'app',
+    'home',
+    'accounts',
+    # Applications Django
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -60,8 +64,8 @@ ROOT_URLCONF = 'recettes.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
+        'DIRS': [BASE_DIR / 'templates'],
+        'APP_DIRS': True, 
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.request',
@@ -121,6 +125,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.1/howto/static-files/
 
 STATIC_URL = 'static/'
+# Dossier avec nos fichiers personnalisés
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
 
 
 # Email

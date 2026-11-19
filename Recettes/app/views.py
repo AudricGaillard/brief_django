@@ -1,3 +1,6 @@
-from django.shortcuts import render
+from django.views.generic import TemplateView
 
-# Create your views here.
+
+# Afficher la page d'accueil
+class AccueilView(TemplateView):
+    template_name = "accueil.html"

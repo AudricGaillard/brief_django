@@ -10,8 +10,7 @@ from app.models import Categorie, Ingredient, Planification, Recette, Utilisateu
 
 def lire_colonne(ligne, *noms_possibles, defaut=""):
     """
-    Récupère la valeur d'une colonne CSV en testant plusieurs noms possibles
-    (par exemple 'id' puis 'identier'), afin d'éviter un KeyError si l'en-tête varie.
+    Récupère la valeur d'une colonne CSV en testant plusieurs noms possible.
     """
     for nom in noms_possibles:
         if nom in ligne and ligne[nom] is not None:
@@ -22,10 +21,10 @@ def lire_colonne(ligne, *noms_possibles, defaut=""):
 class Command(BaseCommand):
     """
     Commande Django permettant de charger les fichiers CSV
-    dans la base SQLite de façon idempotente (sans créer de doublons).
+    dans la base SQLite  (sans créer de doublons).
     """
 
-    help = "Charge les données des fichiers CSV dans la base SQLite."
+    
 
     def handle(self, *args, **options):
         """
@@ -38,7 +37,7 @@ class Command(BaseCommand):
         recettes_par_csv_id = {}
         utilisateurs_par_csv_id = {}
 
-        # Dossier commun contenant les CSV (un niveau au-dessus de BASE_DIR)
+        # Dossier commun contenant les CSV 
         dossier_donnees = os.path.join(settings.BASE_DIR.parent, "donnees", "recettes")
 
         # =====================================================================
@@ -92,7 +91,7 @@ class Command(BaseCommand):
                     )
                     continue
 
-                # Conversion de la chaîne séparée par ';' en liste Python pour JSONField
+                # Conversion de la chaîne séparée par ';' en liste Python 
                 regimes_bruts = lire_colonne(ligne, "regimes_incompatibles")
                 liste_regimes = [
                     r.strip() for r in regimes_bruts.split(";") if r.strip()

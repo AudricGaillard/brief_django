@@ -258,8 +258,7 @@ class Command(BaseCommand):
                 )
 
                 # Attention : dans models.py, date_creation et date_modification ont auto_now_add=True.
-                # Si la commande doit conserver les dates exactes du CSV, on met à jour les champs
-                # via update() (qui contourne auto_now_add). À vérifier avec votre collègue !
+                
                 if cree and dt_creation and date_modif_obj:
                     Planification.objects.filter(pk=planif.pk).update(
                         date_creation=dt_creation,

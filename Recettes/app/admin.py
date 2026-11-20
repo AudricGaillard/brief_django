@@ -1,22 +1,23 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import Utilisateur, Categorie, Objet, Ingredient, Action # a modifier suivant les noms de classe exact
+from .models import Categorie, Ingredient, Planification, Recette, Utilisateur
 
-class CustomUserAdmin(UserAdmin): # A modifier suivant le nom de classe exact
+
+class CustomUserAdmin(UserAdmin):
     """
-    Personnalisation de l'affichage de l'utilisateur dans l'admin 
-    pour inclure les champs spécifiques (role et regime).
+    Personnalisation de l'affichage de l'utilisateur dans l'admin
+    pour inclure le champ spécifique regime.
     """
     fieldsets = UserAdmin.fieldsets + (
-        ('Informations spécifiques', {'fields': ('role', 'regime')}),
+        ('Informations spécifiques', {'fields': ('regime',)}),
     )
     add_fieldsets = UserAdmin.add_fieldsets + (
-        ('Informations spécifiques', {'fields': ('role', 'regime')}),
+        ('Informations spécifiques', {'fields': ('regime',)}),
     )
 
-# Enregistrement des classes , a confirmer.
+
 admin.site.register(Utilisateur, CustomUserAdmin)
 admin.site.register(Categorie)
-admin.site.register(Objet)
+admin.site.register(Recette)
 admin.site.register(Ingredient)
-admin.site.register(Action)
+admin.site.register(Planification)

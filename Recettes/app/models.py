@@ -77,11 +77,29 @@ class Ingredient(models.Model):
         return self.nom
 
 
+
+
+class Role(models.TextChoices):
+    UTILISATEUR = "utilisateur", "Utilisateur"
+    GESTIONNAIRE = "gestionnaire", "Gestionnaire"
+
+
 class Utilisateur(AbstractUser):
-    regime = models.CharField(choices=choix_regime)
+    role = models.CharField(
+        max_length=20,
+        choices=Role.choices,
+        default=Role.UTILISATEUR,
+    )
+    regime = models.CharField(
+        max_length=100,
+        choices=choix_regime,
+        blank=True,
+        null=True,
+    )
 
     def __str__(self):
         return self.username
+    
 
 
 class Planification(models.Model):

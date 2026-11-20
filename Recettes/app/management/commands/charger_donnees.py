@@ -38,7 +38,7 @@ class Command(BaseCommand):
         utilisateurs_par_csv_id = {}
 
         # Dossier commun contenant les CSV 
-        dossier_donnees = os.path.join(settings.BASE_DIR.parent, "donnees", "recettes")
+        dossier_donnees = os.path.join(settings.BASE_DIR.parent, "donnees")
 
         # =====================================================================
         # 1. CHARGEMENT DES CATÉGORIES (categories.csv)

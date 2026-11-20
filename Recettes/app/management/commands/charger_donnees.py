@@ -38,7 +38,7 @@ class Command(BaseCommand):
         utilisateurs_par_csv_id = {}
 
         # Dossier commun contenant les CSV 
-        dossier_donnees = os.path.join(settings.BASE_DIR.parent, "donnees", "recettes")
+        dossier_donnees = os.path.join(settings.BASE_DIR.parent, "donnees")
 
         # =====================================================================
         # 1. CHARGEMENT DES CATÉGORIES (categories.csv)
@@ -164,6 +164,8 @@ class Command(BaseCommand):
         chemin_utilisateurs = os.path.join(dossier_donnees, "utilisateurs.csv")
         self.stdout.write("Chargement des utilisateurs...")
 
+        roles_valides = {"utilisateur", "gestionnaire"}
+
         with open(chemin_utilisateurs, mode="r", encoding="utf-8-sig") as fichier:
             lecteur = csv.DictReader(fichier)
 
@@ -184,20 +186,45 @@ class Command(BaseCommand):
                 if not identifiant_connexion:
                     continue
 
+                # Lecture et normalisation du rôle (par défaut : "utilisateur")
+                role_brut = lire_colonne(ligne, "role", "type_compte", defaut="utilisateur").lower()
+                role_valide = role_brut if role_brut in roles_valides else "utilisateur"
+
+                # Lecture de l'information propre au thème (peut être vide pour un gestionnaire)
+                regime_brut = lire_colonne(ligne, "regime")
+                regime_val = regime_brut if regime_brut else None
+
                 utilisateur, cree = Utilisateur.objects.get_or_create(
                     username=identifiant_connexion,
                     defaults={
                         "email": email,
                         "first_name": prenom,
                         "last_name": nom,
-                        "regime": lire_colonne(ligne, "regime"),
+                        "role": role_valide,
+                        "regime": regime_val,
                     },
                 )
 
                 if cree:
                     utilisateur.set_password("demo1234")
                     utilisateur.save()
-                    self.stdout.write(f"  + Utilisateur créé : {utilisateur.username}")
+                    self.stdout.write(
+                        f"  + Utilisateur créé : {utilisateur.username} ({utilisateur.role})"
+                    )
+                else:
+                    # Mise à jour si le rôle ou le régime a changé dans le CSV
+                    modifie = False
+                    if utilisateur.role != role_valide:
+                        utilisateur.role = role_valide
+                        modifie = True
+                    if utilisateur.regime != regime_val:
+                        utilisateur.regime = regime_val
+                        modifie = True
+                    if modifie:
+                        utilisateur.save()
+                        self.stdout.write(
+                            f"  ~ Utilisateur mis à jour : {utilisateur.username} ({utilisateur.role})"
+                        )
 
                 if csv_id:
                     utilisateurs_par_csv_id[csv_id] = utilisateur
@@ -212,8 +239,10 @@ class Command(BaseCommand):
             lecteur = csv.DictReader(fichier)
 
             for ligne in lecteur:
+                
+
                 csv_user_id = lire_colonne(ligne, "utilisateur_id", "utilisateur_identier")
-                csv_recette_id = lire_colonne(ligne, "recette_id", "objet_identier")
+                csv_recette_id = lire_colonne(ligne, "objet_id", "recette_id", "objet_identier")
 
                 utilisateur_obj = utilisateurs_par_csv_id.get(csv_user_id)
                 recette_obj = recettes_par_csv_id.get(csv_recette_id)

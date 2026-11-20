@@ -30,7 +30,7 @@
                     <a href="/mes-demandes/">Mes demandes</a>
 
                 <!-- Accès réservé au gestionnaire -->
-                {% if user.is_staff %}
+                {% if user.role == 'gestionnaire' %}
                     <a href="/gestion/">Gestion</a>
                 {% endif %}
 

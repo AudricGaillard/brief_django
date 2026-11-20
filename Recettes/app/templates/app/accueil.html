@@ -1,0 +1,31 @@
+<!-- Hériter les classes de "base.html" -->
+{% extends 'base.html' %}
+
+{% block title %}Accueil - Mes Recettes{% endblock %}
+
+{% block content %}
+
+<!-- Titre de la page -->
+<h1 class=""text-3xl font-bold text-green-800"> Bienvenue sur Mes Recettes </h1>
+
+<!-- Presentation du carnet-->
+<p class="text-gray-600 mt-4"> Découvrez nos recettes et planifiez vos repas.</p>
+
+<ul>
+    {% for recette in recettes %}
+        {% if recette.etat_publication == 'publiee' %}
+            <li>
+                <p><strong>{{ recette.titre }}</strong></p>
+                <p>Difficulté : {{ recette.difficulte }}</p>
+                <p>Régimes incompatibles : </p>
+                <ul type="square">
+                    {% for regime in recette.regimes_incompatibles %}
+                        <li>{{ regime }}</li>
+                    {% endfor %}
+                </ul>
+            </li>
+        {% endif %}
+    {% endfor %}
+</ul>
+
+{% endblock %}

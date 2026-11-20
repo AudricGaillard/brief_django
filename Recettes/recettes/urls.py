@@ -22,6 +22,5 @@ from django.urls import path, include
 # Définir des routes de l'application
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include("home.urls")),
-    path('', include("accounts.urls")),
+    path('', include('app.urls'))
 ]

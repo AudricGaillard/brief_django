@@ -37,9 +37,9 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     # Applications du projet
-    'app',
     'home',
     'accounts',
+    'data',
     # Applications Django
     'django.contrib.admin',
     'django.contrib.auth',
@@ -61,7 +61,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'recettes.urls'
 
-AUTH_USER_MODEL = 'app.Utilisateur'
+AUTH_USER_MODEL = 'accounts.Utilisateur'
 
 TEMPLATES = [
     {

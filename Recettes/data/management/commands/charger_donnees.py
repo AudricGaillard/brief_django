@@ -5,7 +5,8 @@ from django.core.management.base import BaseCommand
 from django.utils import timezone
 from django.utils.dateparse import parse_date, parse_datetime
 
-from app.models import Categorie, Ingredient, Planification, Recette, Utilisateur
+from home.models import Categorie, Ingredient, Planification, Recette
+from accounts.models import Utilisateur
 
 
 def lire_colonne(ligne, *noms_possibles, defaut=""):
@@ -38,7 +39,7 @@ class Command(BaseCommand):
         utilisateurs_par_csv_id = {}
 
         # Dossier commun contenant les CSV 
-        dossier_donnees = os.path.join(settings.BASE_DIR.parent, "donnees")
+        dossier_donnees = os.path.join(settings.BASE_DIR.parent, "donnees/recettes")
 
         # =====================================================================
         # 1. CHARGEMENT DES CATÉGORIES (categories.csv)

@@ -1,8 +1,8 @@
 from django.urls import path
-from .views import AccueilView
+from .views import ListRecipesView
  
 
 # Routes de l'application home
 urlpatterns = [
-    path("", AccueilView.as_view(), name="accueil"),
+    path("", ListRecipesView.as_view(), name="accueil"),
 ]

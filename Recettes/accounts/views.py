@@ -13,3 +13,6 @@ class InscriptionView(CreateView):
     form_class = UserCreationForm
     template_name = "accounts/inscription.html"
     success_url = reverse_lazy("connexion")
+
+
+    

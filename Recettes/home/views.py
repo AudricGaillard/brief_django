@@ -1,11 +1,17 @@
-from django.views.generic import ListView
 
-# Afficher la page d'accueil
-from django.views.generic import ListView
+from django.views.generic import ListView, TemplateView
 from .models import Recette
 
-# Create your views here.
-class ListRecipesView(ListView):
-    model=Recette
-    template_name='recette_list.html'
-    context_object_name = 'recettes'
+# Afficher la page d'accueil
+class HomeView(TemplateView):
+    template_name = "home/recette_list.html"  # ou le nom de ton fichier d'accueil
+
+
+# Afficher le catalogue des recettes
+class CatalogueView(ListView):
+    model = Recette
+    template_name = "home/catalogue.html"
+    context_object_name = "recettes"
+
+    def get_queryset(self):
+        return Recette.objects.filter(etat_publication="publiee")

@@ -30,9 +30,11 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'default')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1']
 
+STATIC_ROOT=BASE_DIR / 'staticfiles'
 
+MEDIA_ROOT = BASE_DIR / 'media'
 # Application definition
 
 INSTALLED_APPS = [

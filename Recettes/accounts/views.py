@@ -1,5 +1,5 @@
 from django.contrib.auth.views import LoginView
-from django.contrib.auth.forms import UserCreationForm
+from .forms import InscriptionForm
 from django.views.generic import CreateView
 from django.urls import reverse_lazy
 
@@ -10,6 +10,6 @@ class ConnexionView(LoginView):
 
 # Afficher le formulaire d'inscription
 class InscriptionView(CreateView):
-    form_class = UserCreationForm
+    form_class = InscriptionForm
     template_name = "accounts/inscription.html"
     success_url = reverse_lazy("connexion")

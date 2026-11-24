@@ -1,92 +1,138 @@
-from django.db import models
-
-# Create your models here.
-from django.db import models
+import datetime
 from django.core import validators
-from datetime import datetime
+from django.db import models
 from accounts.models import Utilisateur
 
 
-choix_difficulte={
-    'facile':'Facile',
-    'moyen':'Moyen',
-    'difficile':'Difficile'
-}
+CHOIX_DIFFICULTE = [
+    ("facile", "Facile"),
+    ("moyen", "Moyen"),
+    ("difficile", "Difficile"),
+]
 
-choix_visibillite={
-    'brouillon':'Brouillon',
-    'publiee':'Publiée'
-}
+CHOIX_ETAT_PUBLICATION = [
+    ("brouillon", "Brouillon"),
+    ("publiee", "Publiée"),
+]
 
-choix_unite={
-    'g':'Grammes',
-    'kg':'Kilogrammes',
-    'ml':'Mililitres',
-    'cl':'Centilitres',
-    'l':'Litres',
-    'c. a soupe':'Cuillère à soupe',
-    'c. a cafe':'Cuillère à café',
-    'piece':'Pièce',
-    'pincee':'Pincée' 
-}
+CHOIX_UNITE = [
+    ("g", "Grammes"),
+    ("kg", "Kilogrammes"),
+    ("ml", "Millilitres"),
+    ("cl", "Centilitres"),
+    ("l", "Litres"),
+    ("c. à soupe", "Cuillère à soupe"),
+    ("c. à café", "Cuillère à café"),
+    ("pièce", "Pièce"),
+    ("pincée", "Pincée"),
+]
 
-choix_role={
-    'utilisateur':'Utilisateur',
-    'gestionnaire':'Gestionnaire'
-}
+CHOIX_REGIME = [
+    ("vegetarien", "Végétarien"),
+    ("vegan", "Vegan"),
+    ("sans_gluten", "Sans gluten"),
+    ("sans_lactose", "Sans lactose"),
+]
 
-choix_regime={
-    'vegetarien':'Végétarien',
-    'vegan':'Vegan',
-    'sans_gluten':'Sans gluten',
-    'sans_lactose':'Sans lactose'
-}
+CHOIX_ETAT_PLANIFICATION = [
+    ("prevue", "Prévue"),
+    ("cuisinee", "Cuisinée"),
+    ("annulee", "Annulée"),
+]
 
-choix_etat={
-    'prevue':'Prévue',
-    'cuisinee':'Cuisinée',
-    'annulee':'Annulée'
-}
 
-# Create your models here.
 class Categorie(models.Model):
-    nom = models.CharField(max_length=30)
+    nom = models.CharField(max_length=50, unique=True)
 
     def __str__(self):
         return self.nom
 
 
 class Recette(models.Model):
-    titre = models.CharField(max_length=30, unique=True)
-    categorie_id = models.ForeignKey(Categorie, on_delete=models.CASCADE)
-    temps_preparation_min = models.PositiveIntegerField(validators=[validators.MinValueValidator(1)], help_text="Veuillez indiquez un temps au moins supérieur à 1 minute")
-    temps_cuisson_min = models.PositiveIntegerField(default=0)
-    portions = models.PositiveIntegerField(validators=[validators.MinValueValidator(1)], help_text='Veuillez mettre une valeur au moins supérieur à 1')
-    difficulte = models.CharField(choices=choix_difficulte)
-    etat_publication = models.CharField(choices=choix_visibillite)
-    etapes = models.TextField(help_text="3 à 6 étapes. Veuillez les séparer avec '|'.")
-    regimes_incompatibles=models.JSONField(choices=choix_regime, default=list)
+    titre = models.CharField(max_length=150, unique=True)
+    categorie_id = models.ForeignKey(
+        Categorie,
+        on_delete=models.CASCADE,
+        related_name="recettes",
+    )
+    temps_preparation_min = models.PositiveIntegerField(
+        validators=[validators.MinValueValidator(1)],
+        help_text="Indiquez un temps d'au moins 1 minute.",
+    )
+    temps_cuisson_min = models.PositiveIntegerField(
+        default=0,
+        validators=[validators.MinValueValidator(0)],
+    )
+    portions = models.PositiveIntegerField(
+        validators=[validators.MinValueValidator(1)],
+        help_text="Indiquez un nombre de portions d'au moins 1.",
+    )
+    difficulte = models.CharField(max_length=20, choices=CHOIX_DIFFICULTE)
+    etat_publication = models.CharField(
+        max_length=20,
+        choices=CHOIX_ETAT_PUBLICATION,
+        default="brouillon",
+    )
+    etapes = models.TextField(
+        help_text="3 à 6 étapes séparées par '|'."
+    )
+    regimes_incompatibles = models.JSONField(default=list, blank=True)
 
     def __str__(self):
         return self.titre
 
 
 class Ingredient(models.Model):
-    recette_id = models.ForeignKey(Recette, on_delete=models.CASCADE)
-    nom = models.CharField(max_length=30)
-    quantite =  models.PositiveIntegerField(validators=[validators.MinValueValidator(1)])
-    unite = models.CharField(choices=choix_unite)
+    recette_id = models.ForeignKey(
+        Recette,
+        on_delete=models.CASCADE,
+        related_name="ingredients",
+    )
+    nom = models.CharField(max_length=120)
+    quantite = models.DecimalField(
+        max_digits=8,
+        decimal_places=2,
+        validators=[validators.MinValueValidator(0.01)],
+    )
+    unite = models.CharField(max_length=20, choices=CHOIX_UNITE)
 
     def __str__(self):
-        return self.nom
+        return f"{self.nom} ({self.quantite} {self.unite})"
 
 
 class Planification(models.Model):
-    utilisateur_id = models.ForeignKey(Utilisateur, on_delete=models.CASCADE)
-    recette_id = models.ForeignKey(Recette, on_delete=models.CASCADE)
-    etat = models.CharField(choices=choix_etat)
-    date_prevue = models.DateField(validators=[validators.MinValueValidator(datetime(2026,11,1,0,0,0)), validators.MaxValueValidator(datetime(2026,12,26,0,0,0))], help_text="Saisissez une date entre le 11 novembre 2026 et le 12 décembre 2026")
-    convives = models.PositiveIntegerField(validators=[validators.MinValueValidator(1), validators.MaxValueValidator(50)], help_text="Saisissez un nombre entre 1 et 50")
-    date_creation = models.DateTimeField(auto_now_add=True)
-    date_modification = models.DateField(auto_now_add=True)
+    utilisateur_id = models.ForeignKey(
+        Utilisateur,
+        on_delete=models.CASCADE,
+        related_name="planifications",
+    )
+    recette_id = models.ForeignKey(
+        Recette,
+        on_delete=models.CASCADE,
+        related_name="planifications",
+    )
+    etat = models.CharField(
+        max_length=20,
+        choices=CHOIX_ETAT_PLANIFICATION,
+        default="prevue",
+    )
+    date_prevue = models.DateField(
+        validators=[
+            validators.MinValueValidator(datetime.date(2026, 11, 1)),
+            validators.MaxValueValidator(datetime.date(2026, 12, 20)),
+        ],
+        help_text="Date prévue entre le 2026-11-01 et le 2026-12-20.",
+    )
+    convives = models.PositiveIntegerField(
+        validators=[
+            validators.MinValueValidator(1),
+            validators.MaxValueValidator(10),
+        ],
+        help_text="Nombre de convives entre 1 et 10.",
+    )
+    # Pas d'auto_now_add / auto_now pour préserver les dates du CSV et contrôler les mises à jour
+    date_creation = models.DateTimeField()
+    date_modification = models.DateTimeField()
 
+    def __str__(self):
+        return f"{self.utilisateur_id} - {self.recette_id} ({self.etat})"

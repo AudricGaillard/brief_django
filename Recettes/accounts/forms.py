@@ -1,5 +1,5 @@
 from django.contrib.auth.forms import UserCreationForm
-from app.models import Utilisateur
+from .models import Utilisateur
 
 
 class InscriptionForm(UserCreationForm):

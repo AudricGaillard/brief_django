@@ -15,19 +15,20 @@
     <ul class="grid grid-cols-1 md:grid-cols-2 gap-6">
         {% for recette in recettes %}
             {% if recette.etat_publication == 'publiee' %}
-                <li class="p-6 bg-white border border-gray-200 rounded-xl shadow-sm">
-                    <p class="text-lg font-bold text-gray-900">{{ recette.titre }}</p>
-                    <p class="text-sm text-gray-600 mt-1">Difficulté : {{ recette.difficulte }}</p>
+                <a href={{ recette.id }}>
+                    <li class="p-6 bg-white border border-gray-200 rounded-xl shadow-sm">
+                        <p class="text-lg font-bold text-gray-900">{{ recette.titre }}</p>
+                        <p class="text-sm text-gray-600 mt-1">Difficulté : {{ recette.difficulte }}</p>
 
-                    <p class="text-sm font-medium text-gray-700 mt-4">Régimes incompatibles :</p>
-                    <ul class="list-disc list-inside text-sm text-gray-600 mt-1 space-y-1">
-                        {% for regime in recette.regimes_incompatibles %}
-                            <li>{{ regime }}</li>
-                        {% empty %}
-                            <li class="list-none text-gray-400 italic">Aucun régime incompatible renseigné</li>
-                        {% endfor %}
-                    </ul>
-                </li>
+                        <p class="text-sm font-medium text-gray-700 mt-4">Régimes incompatibles :</p>
+                        <ul class="list-disc list-inside text-sm text-gray-600 mt-1 space-y-1">
+                            {% for regime in recette.regimes_incompatibles %}
+                                <li>{{ regime }}</li>
+                            {% empty %}
+                                <li class="list-none text-gray-400 italic">Aucun régime incompatible renseigné</li>
+                            {% endfor %}
+                        </ul>
+                    </li>
             {% endif %}
         {% empty %}
             <li class="col-span-full text-center text-gray-500 py-8">

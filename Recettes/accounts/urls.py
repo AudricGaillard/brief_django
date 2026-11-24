@@ -3,5 +3,5 @@ from .views import ConnexionView, InscriptionView
 
 
 # Routes pour la connexion et l'inscription
-urlpatterns = [path("connexion/", ConnexionViews.as_view(), name="inscription"),
+urlpatterns = [path("connexion", ConnexionView.as_view(), name="connexion"),
 ]

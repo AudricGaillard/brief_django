@@ -57,13 +57,15 @@ class Command(BaseCommand):
         recettes_par_csv_id = {}
         utilisateurs_par_csv_id = {}
 
-        dossier_donnees = os.path.join(settings.BASE_DIR.parent, "donnees", "recettes")
-
+        dossier_donnees = os.path.join(settings.BASE_DIR.parent, "donnees")
+        
         # ---------------------------------------------------------------------
         # 1. CATÉGORIES (categories.csv)
         # ---------------------------------------------------------------------
         chemin_categories = os.path.join(dossier_donnees, "categories.csv")
         self.stdout.write("Chargement des catégories...")
+
+        
 
         with open(chemin_categories, mode="r", encoding="utf-8-sig") as fichier:
             for ligne in csv.DictReader(fichier):

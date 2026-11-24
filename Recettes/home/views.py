@@ -266,3 +266,102 @@ class MesDemandesView(LoginRequiredMixin, View):
             messages.error(request, "Action non reconnue.")
 
         return redirect("mes_demandes")
+
+class GestionView(LoginRequiredMixin, View):
+    template_name = "home/gestion.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return self.handle_no_permission()
+        if getattr(request.user, "role", None) != "gestionnaire":
+            raise PermissionDenied("Accès réservé aux gestionnaires.")
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request):
+        planifications = (
+            Planification.objects.select_related("utilisateur_id", "recette_id")
+            .order_by("-date_creation")
+        )
+        recettes = Recette.objects.select_related("categorie_id").order_by("titre")
+        aujourd_hui = timezone.localdate()
+
+        planifications_enrichies = []
+        for planif in planifications:
+            planifications_enrichies.append(
+                {
+                    "planification": planif,
+                    "peut_marquer_cuisinee": (
+                        planif.etat == "prevue" and aujourd_hui >= planif.date_prevue
+                    ),
+                    "peut_annuler": planif.etat == "prevue",
+                }
+            )
+
+        return render(
+            request,
+            self.template_name,
+            {
+                "planifications_enrichies": planifications_enrichies,
+                "recettes": recettes,
+                "aujourd_hui": aujourd_hui,
+            },
+        )
+
+    def post(self, request):
+        type_action = request.POST.get("type_action")
+
+        if type_action == "transition_planification":
+            planif_id = request.POST.get("planification_id")
+            action = request.POST.get("action")
+            planif = get_object_or_404(Planification, pk=planif_id)
+
+            if planif.etat != "prevue":
+                messages.error(
+                    request,
+                    "Cette planification est déjà finalisée et ne peut plus changer d'état.",
+                )
+                return redirect("gestion")
+
+            if action == "marquer_cuisinee":
+                if timezone.localdate() < planif.date_prevue:
+                    messages.error(
+                        request,
+                        "Impossible de marquer cette planification comme cuisinée avant sa date prévue.",
+                    )
+                    return redirect("gestion")
+                planif.etat = "cuisinee"
+                planif.date_modification = timezone.now()
+                planif.save(update_fields=["etat", "date_modification"])
+                messages.success(request, "Planification marquée comme cuisinée.")
+
+            elif action == "annuler":
+                planif.etat = "annulee"
+                planif.date_modification = timezone.now()
+                planif.save(update_fields=["etat", "date_modification"])
+                messages.success(request, "Planification annulée.")
+
+            else:
+                messages.error(request, "Action de planification non reconnue.")
+
+        elif type_action == "basculer_publication":
+            recette_id = request.POST.get("recette_id")
+            recette = get_object_or_404(Recette, pk=recette_id)
+
+            if recette.etat_publication == "publiee":
+                recette.etat_publication = "brouillon"
+                messages.success(
+                    request,
+                    f"La recette « {recette.titre} » est passée en brouillon (nouvelles planifications bloquées).",
+                )
+            else:
+                recette.etat_publication = "publiee"
+                messages.success(
+                    request,
+                    f"La recette « {recette.titre} » est maintenant publiée.",
+                )
+            recette.save(update_fields=["etat_publication"])
+
+        else:
+            messages.error(request, "Action non reconnue.")
+
+        return redirect("gestion")

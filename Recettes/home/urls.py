@@ -1,15 +1,15 @@
 
+
+
 from django.urls import path
 from .views import (
     CatalogueView,
+    GestionView,
     HomeView,
     MesDemandesView,
     PlanificationCreateView,
     RecetteDetailView,
 )
-
-
-
 
 urlpatterns = [
     path("", HomeView.as_view(), name="accueil"),
@@ -17,4 +17,5 @@ urlpatterns = [
     path("catalogue/<int:pk>/", RecetteDetailView.as_view(), name="recette_detail"),
     path("catalogue/<int:pk>/demande/", PlanificationCreateView.as_view(), name="planification_create"),
     path("mes-demandes/", MesDemandesView.as_view(), name="mes_demandes"),
+    path("gestion/", GestionView.as_view(), name="gestion"),
 ]

@@ -37,9 +37,31 @@ class CatalogueView(ListView):
 
         if categorie_id.isdigit():
             queryset = queryset.filter(categorie_id=int(categorie_id))
+        # Récupérer la difficulté sélectionnée
+        difficulte = self.request.GET.get("difficulte", "")
 
+        # Filtrer les recettes par difficulté
+        if difficulte in ["facile", "moyen", "difficile"]:
+            queryset = queryset.filter(difficulte=difficulte)
+       
+        # Récupérer le temps maximum de préparation
+        temps = self.request.GET.get("temps", "")
+
+        # Filtrer les recettes selon le temps de préparation
+        if temps.isdigit():
+            queryset = queryset.filter(
+                temps_preparation_min__lte=int(temps)
+            ) 
+        
         # Récupérer le choix de tri
         tri = self.request.GET.get("tri", "az")
+
+        # Trier par temps de préparation
+        if tri == "temps_croissant":
+            return queryset.order_by("temps_preparation_min")
+
+        if tri == "temps_decroissant":
+            return queryset.order_by("-temps_preparation_min")
 
         # Normaliser les accents et les ligatures
         def normaliser(recette):

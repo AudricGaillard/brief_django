@@ -57,11 +57,13 @@ class Command(BaseCommand):
         recettes_par_csv_id = {}
         utilisateurs_par_csv_id = {}
 
-        dossier_donnees = os.path.join(settings.BASE_DIR.parent, "donnees")
-        
-        # ---------------------------------------------------------------------
-        # 1. CATÉGORIES (categories.csv)
-        # ---------------------------------------------------------------------
+        # Dossier commun contenant les CSV 
+        # Dossier commun contenant les CSV
+        dossier_donnees = os.path.join(settings.BASE_DIR, "recettes", "donnees", "recettes")
+
+        # =====================================================================
+        # 1. CHARGEMENT DES CATÉGORIES (categories.csv)
+        # =====================================================================
         chemin_categories = os.path.join(dossier_donnees, "categories.csv")
         self.stdout.write("Chargement des catégories...")
 

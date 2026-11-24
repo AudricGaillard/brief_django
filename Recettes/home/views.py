@@ -1,4 +1,5 @@
 from decimal import Decimal
+import unicodedata
 
 from django import forms
 from django.contrib import messages
@@ -23,6 +24,7 @@ class CatalogueView(ListView):
     context_object_name = "recettes"
 
     def get_queryset(self):
+                
         queryset = Recette.objects.filter(etat_publication="publiee").select_related("categorie_id")
 
         recherche = self.request.GET.get("q", "").strip()
@@ -36,7 +38,23 @@ class CatalogueView(ListView):
         if categorie_id.isdigit():
             queryset = queryset.filter(categorie_id=int(categorie_id))
 
-        return queryset
+        # Récupérer le choix de tri
+        tri = self.request.GET.get("tri", "az")
+
+        # Normaliser les accents et les ligatures
+        def normaliser(recette):
+            titre = recette.titre.lower().replace("œ", "oe")
+            titre = unicodedata.normalize("NFD", titre)
+            return "".join(
+                c for c in titre if not unicodedata.combining(c)
+            )
+
+        # Trier les recettes
+        return sorted(
+            queryset,
+            key=normaliser,
+            reverse=(tri == "za")
+        )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

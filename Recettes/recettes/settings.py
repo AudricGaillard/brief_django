@@ -135,6 +135,7 @@ STATICFILES_DIRS = [
 ]
 
 LOGIN_REDIRECT_URL = '/catalogue'
+LOGOUT_REDIRECT_URL = '/'
 
 
 # Email

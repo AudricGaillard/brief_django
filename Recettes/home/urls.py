@@ -1,6 +1,4 @@
-
-
-
+from django.contrib.auth.views import LogoutView
 from django.urls import path
 from .views import (
     CatalogueView,
@@ -9,8 +7,9 @@ from .views import (
     MesDemandesView,
     PlanificationCreateView,
     RecetteDetailView,
+    RechercheRecetteView,
 )
-from django.contrib.auth.views import LogoutView
+
 
 urlpatterns = [
     path("", HomeView.as_view(), name="accueil"),
@@ -19,5 +18,7 @@ urlpatterns = [
     path("catalogue/<int:pk>/demande/", PlanificationCreateView.as_view(), name="planification_create"),
     path("mes-demandes/", MesDemandesView.as_view(), name="mes_demandes"),
     path("gestion/", GestionView.as_view(), name="gestion"),
-    path("deconnexion/", LogoutView.as_view(), name="deconnexion")
+    path("deconnexion/", LogoutView.as_view(), name="deconnexion"),
+    path("recherche/", RechercheRecetteView.as_view(), name="recherche_recettes"),
 ]
+

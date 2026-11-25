@@ -3,7 +3,7 @@ import unicodedata
 
 from django import forms
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin,  UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
@@ -11,8 +11,8 @@ from django.utils import timezone
 from django.views import View
 from django.views.generic import DetailView, ListView, TemplateView
 
-from .models import Categorie, Planification, Recette, Ingredient
-import unicodedata
+from .models import Categorie, Planification, Recette
+
 
 class HomeView(TemplateView):
     template_name = "home/recette_list.html"
@@ -141,8 +141,10 @@ class PlanificationForm(forms.ModelForm):
         }
 
 
-class PlanificationCreateView(LoginRequiredMixin, View):
+class PlanificationCreateView(UserPassesTestMixin, LoginRequiredMixin, View):
     template_name = "home/planification_form.html"
+    def test_func(self):
+        return self.request.user.role != "gestionnaire"
 
     def get_recette_publiee(self, pk):
         recette = get_object_or_404(Recette, pk=pk)
@@ -218,9 +220,11 @@ class PlanificationCreateView(LoginRequiredMixin, View):
         )
 
 
-class MesDemandesView(LoginRequiredMixin, View):
+class MesDemandesView(UserPassesTestMixin, LoginRequiredMixin, View):
     template_name = "home/mes_demandes.html"
-
+    def test_func(self):
+            return self.request.user.role != "gestionnaire"
+    
     def get(self, request):
         planifications = (
             Planification.objects.filter(utilisateur_id=request.user)

@@ -39,9 +39,8 @@
                
                 <!-- Filtrer par difficulté -->
         <label for="difficulte" class="font-medium text-gray-700 ml-4">
-            
+            Difficulté :
         </label>
-
         <select name="difficulte" id="difficulte"
                 onchange="this.form.submit()"
                 class="border border-gray-300 rounded-lg p-2">
@@ -90,16 +89,16 @@
     <ul class="grid grid-cols-1 md:grid-cols-2 gap-6">
         {% for recette in recettes %}
             {% if recette.etat_publication == 'publiee' %}
-                <li class="p-6 bg-white border border-gray-200 rounded-xl shadow-sm">
-                    <p class="text-lg font-bold text-gray-900">{{ recette.titre }}</p>
-                    <p class="text-sm text-gray-600 mt-1">
-                        Difficulté : {{ recette.difficulte }}
-                    </p>
+                <a href={{ recette.id }} class="p-6 bg-white border border-gray-200 rounded-xl shadow-sm">
+                    <li>
+                        <p class="text-lg font-bold text-gray-900">{{ recette.titre }}</p>
+                        <p class="text-sm text-gray-600 mt-1">
+                            Difficulté : {{ recette.difficulte }}
+                        </p>
 
-                    <p class="text-sm text-gray-600 mt-1">
-                        Temps de préparation : {{ recette.temps_preparation_min }} min
-                    </p>
-
+                        <p class="text-sm text-gray-600 mt-1">
+                            Temps de préparation : {{ recette.temps_preparation_min }} min
+                        </p>
                         <p class="text-sm font-medium text-gray-700 mt-4">Régimes incompatibles :</p>
                         <ul class="list-disc list-inside text-sm text-gray-600 mt-1 space-y-1">
                             {% for regime in recette.regimes_incompatibles %}
@@ -109,6 +108,7 @@
                             {% endfor %}
                         </ul>
                     </li>
+                </a>
             {% endif %}
         {% empty %}
             <li class="col-span-full text-center text-gray-500 py-8">

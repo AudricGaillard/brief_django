@@ -100,15 +100,15 @@
                         Temps de préparation : {{ recette.temps_preparation_min }} min
                     </p>
 
-                    <p class="text-sm font-medium text-gray-700 mt-4">Régimes incompatibles :</p>
-                    <ul class="list-disc list-inside text-sm text-gray-600 mt-1 space-y-1">
-                        {% for regime in recette.regimes_incompatibles %}
-                            <li>{{ regime }}</li>
-                        {% empty %}
-                            <li class="list-none text-gray-400 italic">Aucun régime incompatible renseigné</li>
-                        {% endfor %}
-                    </ul>
-                </li>
+                        <p class="text-sm font-medium text-gray-700 mt-4">Régimes incompatibles :</p>
+                        <ul class="list-disc list-inside text-sm text-gray-600 mt-1 space-y-1">
+                            {% for regime in recette.regimes_incompatibles %}
+                                <li>{{ regime }}</li>
+                            {% empty %}
+                                <li class="list-none text-gray-400 italic">Aucun régime incompatible renseigné</li>
+                            {% endfor %}
+                        </ul>
+                    </li>
             {% endif %}
         {% empty %}
             <li class="col-span-full text-center text-gray-500 py-8">

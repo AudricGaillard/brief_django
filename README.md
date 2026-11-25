@@ -87,7 +87,7 @@ python manage.py runserver
 
 ### Pages et routes imposées
 - `/` : Accueil présentant le service, une sélection de recettes du catalogue et l'accès à l'inscription / connexion.
-- `/catalogue/` : Catalogue des recettes publiées avec recherche par mot-clé et filtre par catégorie.
+- `/catalogue/` : Catalogue des recettes publiées avec recherche par mot-clé et filtre par catégorie, tri alphabétique (A-Z / Z-A), filtre par difficulté (`facile`, `moyen`, `difficile`), tri par temps de préparation (croissant / décroissant) et filtre par durée maximale (15, 30 ou 60 minutes). Affichage du temps de préparation pour chaque recette.
 - `/catalogue/<id>/` : Détail d'une recette (ingrédients, étapes, régimes incompatibles, action de planification pour utilisateur connecté).
 - `/catalogue/<id>/demande/` : Création d'une planification de repas (réservée aux utilisateurs connectés ; utilisateur, recette et état initial gérés côté serveur).
 - `/mes-demandes/` : Planifications de l'utilisateur connecté et actions autorisées selon l'état (`prevue` → `cuisinee` si la date prévue est atteinte ou passée, ou `prevue` → `annulee`).
@@ -111,3 +111,11 @@ python manage.py runserver
 - **Représentation du rôle et de l'information propre au compte (`role` et `regime`) :** *[À compléter : modèle de profil lié à l'utilisateur ou modèle utilisateur étendu, et gestion des droits côté serveur.]*
 - **Contrôle des transitions d'état et règles métier :** *[À compléter : validation côté serveur dans les vues/formulaires/modèles pour bloquer les transitions interdites et vérifier la date avant passage à `cuisinee`.]*
 - **Commande `charger_donnees` relançable et conservation des dates :** *[À compléter : clé de rapprochement/unicité et affectation explicite des dates plutôt que `auto_now` / `auto_now_add`.]*
+- **Vues basées sur les classes (`ListView`) :** utilisation de la programmation orientée objet pour l'affichage du catalogue.
+- **Tri et filtrage du catalogue :** utilisation de Django ORM (`filter()` et `order_by()`) et de `request.GET` pour récupérer les critères sélectionnés.
+- **Normalisation des caractères (`unicodedata`) :** prise en compte des accents et des ligatures dans le tri alphabétique.
+- **Templates Django et Tailwind CSS :** utilisation d'un template commun (`base.html`) pour assurer la cohérence de l'affichage des pages.
+- **Actualisation automatique des filtres (`onchange`) :** soumission automatique du formulaire après la sélection d'un critère.
+- **Organisation des templates HTML :** séparation des pages d'accueil, de connexion et du catalogue pour faciliter la maintenance du code.
+- **Conservation des critères de filtrage :** maintien des options sélectionnées dans les listes déroulantes après l'actualisation du catalogue.
+- **Ergonomie du catalogue :** ajout de libellés explicites devant les filtres pour faciliter leur utilisation.

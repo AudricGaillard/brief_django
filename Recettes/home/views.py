@@ -11,7 +11,7 @@ from django.views import View
 from django.views.generic import DetailView, ListView, TemplateView
 
 from .models import Categorie, Planification, Recette, Ingredient
-
+import unicodedata
 
 class HomeView(TemplateView):
     template_name = "home/recette_list.html"
@@ -370,3 +370,57 @@ class GestionView(LoginRequiredMixin, View):
             messages.error(request, "Action non reconnue.")
 
         return redirect("gestion")
+
+
+
+
+def _normaliser_texte(texte):
+    if not texte:
+        return ""
+    texte = texte.replace("œ", "oe").replace("Œ", "oe")
+    texte = unicodedata.normalize("NFD", texte)
+    texte = "".join(ch for ch in texte if unicodedata.category(ch) != "Mn")
+    return texte.lower()
+
+
+class RechercheRecetteView(LoginRequiredMixin, ListView):
+    model = Recette
+    template_name = "home/recherche_recettes.html"
+    context_object_name = "recettes"
+
+    def get_queryset(self):
+        queryset = (
+            Recette.objects.filter(etat_publication="publiee")
+            .select_related("categorie_id")
+            .prefetch_related("ingredients")
+        )
+        query = self.request.GET.get("q", "").strip()
+
+        if not query:
+            return queryset
+
+        mots = [_normaliser_texte(mot) for mot in query.split() if _normaliser_texte(mot)]
+        if not mots:
+            return queryset.none()
+
+        ids_correspondants = []
+        for recette in queryset:
+            noms_ingredients = " ".join(ing.nom for ing in recette.ingredients.all())
+            categorie_nom = recette.categorie_id.nom if recette.categorie_id else ""
+            texte_complet = _normaliser_texte(
+                f"{recette.titre} {recette.etapes or ''} {categorie_nom} {noms_ingredients}"
+            )
+
+            if all(mot in texte_complet for mot in mots):
+                ids_correspondants.append(recette.pk)
+
+        return (
+            Recette.objects.filter(pk__in=ids_correspondants, etat_publication="publiee")
+            .select_related("categorie_id")
+            .distinct()
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["query"] = self.request.GET.get("q", "").strip()
+        return context

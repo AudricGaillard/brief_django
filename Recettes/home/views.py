@@ -9,7 +9,8 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views import View
 from django.views.generic import DetailView, ListView, TemplateView
-from .models import Categorie, Planification, Recette
+
+from .models import Categorie, Planification, Recette, Ingredient
 import unicodedata
 
 class HomeView(TemplateView):
@@ -51,18 +52,22 @@ class RecetteDetailView(DetailView):
     context_object_name = "recette"
 
     def get_queryset(self):
-        user = self.request.user
         base_qs = Recette.objects.select_related("categorie_id").prefetch_related("ingredients")
-        if user.is_authenticated and getattr(user, "role", None) == "gestionnaire":
-            return base_qs
-        return base_qs.filter(etat_publication="publiee")
+        return base_qs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         recette = self.object
 
+        
+        context['categorie'] = recette.categorie_id.nom
+
         context["etapes_liste"] = [
             etape.strip() for etape in (recette.etapes or "").split("|") if etape.strip()
+        ]
+
+        context['ingredients']=[
+           {'nom':ingredient.nom, 'quantite':int(ingredient.quantite), 'unite':ingredient.unite} for ingredient in recette.ingredients.all()
         ]
 
         regime_utilisateur = (
@@ -75,6 +80,7 @@ class RecetteDetailView(DetailView):
         context["regime_incompatible"] = bool(
             regime_utilisateur and regime_utilisateur in incompatibles
         )
+
         context["peut_planifier"] = (
             self.request.user.is_authenticated and recette.etat_publication == "publiee"
         )

@@ -100,14 +100,14 @@ class RecetteDetailView(DetailView):
         recette = self.object
 
         
-        context['categorie'] = recette.categorie_id.nom
+        context['categorie'] = recette.categorie_id.nom.capitalize()
 
         context["etapes_liste"] = [
             etape.strip() for etape in (recette.etapes or "").split("|") if etape.strip()
         ]
 
         context['ingredients']=[
-           {'nom':ingredient.nom, 'quantite':int(ingredient.quantite), 'unite':ingredient.unite} for ingredient in recette.ingredients.all()
+           {'nom':ingredient.nom.capitalize(), 'quantite':int(ingredient.quantite), 'unite':ingredient.unite} for ingredient in recette.ingredients.all()
         ]
 
         regime_utilisateur = (

@@ -5,6 +5,7 @@ from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from home.models import  Recette
 from django.views.generic import  ListView
+from django.db.models import Q
 
 
 # Afficher le formulaire de connexion

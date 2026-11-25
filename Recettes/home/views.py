@@ -59,17 +59,15 @@ class RecetteDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         recette = self.object
 
-        categorie = Categorie.objects.get(id = recette.categorie_id_id)
-        context['categorie'] = categorie.nom.capitalize()
+        
+        context['categorie'] = recette.categorie_id.nom
 
         context["etapes_liste"] = [
             etape.strip() for etape in (recette.etapes or "").split("|") if etape.strip()
         ]
 
-        ingredients = Ingredient.objects.all()
-        ingredients_recettes = ingredients.filter(recette_id_id = recette.id)
         context['ingredients']=[
-           {'nom':ingredient.nom.capitalize(), 'quantite':int(ingredient.quantite), 'unite':ingredient.unite} for ingredient in ingredients_recettes
+           {'nom':ingredient.nom, 'quantite':int(ingredient.quantite), 'unite':ingredient.unite} for ingredient in recette.ingredients.all()
         ]
 
         regime_utilisateur = (

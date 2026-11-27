@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Détails de la recette - Mes Recettes{% endblock %}
+
+{% block content %}
+
+    <h2 class="text-4xl md:text-5xl font-extrabold tracking-tight text-green-800">{{ recette.titre }}</h2>
+    {% if regime_incompatible %}
+        <br>
+        <p class="font-bold text-red-900">Attention ! Cette recette ne peux peut-être pas convenable pour votre régime.</p>
+    {% endif %}
+    <br>
+    <p class="text-lg font-bold text-gray-900">Catégorie : {{ categorie }}</p>
+    <p class="text-lg font-bold text-gray-900">Temps de préparation : {{ recette.temps_preparation_min }} minutes</p>
+    <p class="text-lg font-bold text-gray-900">Temps de cuisson : {{ recette.temps_cuisson_min }} minutes</p>
+    <br>
+    <h2 class="text-4xl md:text-5xl font-extrabold tracking-tight text-green-800">Ingrédients</h2>
+    <br>
+    {% for ingredient in ingredients %}
+        <p>{{ ingredient.nom }} : {{ ingredient.quantite }} {{ ingredient.unite }}</p>
+    {% endfor %}
+    <br>
+    <h2 class="text-4xl md:text-5xl font-extrabold tracking-tight text-green-800">Etapes de préparation</h2>
+    <br>
+    {% for etapes in etapes_liste %}
+        <p>{{ etapes }}</p>
+    {% endfor %}
+    {% if peut_planifier and user.role != "gestionnaire" %}
+        <br>
+        <a href="demande" class="bg-white text-green-1300 hover:bg-green-50 px-3 py-1.5 rounded text-sm font-semibold transition">
+            Commander
+        </a>
+    {% else %}
+        
+    {% endif %}
+    
+
+{% endblock %}

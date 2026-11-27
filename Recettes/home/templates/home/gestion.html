@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% block title %}Espace gestionnaire - Mes Recettes{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto space-y-10">
+    <div>
+        <h1 class="text-2xl font-bold text-gray-900">Espace gestionnaire</h1>
+        <p class="text-sm text-gray-600 mt-1">
+            Suivi des planifications et gestion de la publication des recettes.
+        </p>
+    </div>
+
+    <!-- Section 1 : Toutes les planifications -->
+    <section class="bg-white rounded-lg shadow border border-gray-200 p-6">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">Planifications enregistrées</h2>
+
+        {% if planifications_enrichies %}
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200 text-sm">
+                    <thead class="bg-gray-50 text-left text-gray-700">
+                        <tr>
+                            <th class="px-4 py-3 font-semibold">Recette</th>
+                            <th class="px-4 py-3 font-semibold">Utilisateur</th>
+                            <th class="px-4 py-3 font-semibold">Date prévue</th>
+                            <th class="px-4 py-3 font-semibold">Convives</th>
+                            <th class="px-4 py-3 font-semibold">État</th>
+                            <th class="px-4 py-3 font-semibold">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        {% for item in planifications_enrichies %}
+                            {% with planif=item.planification %}
+                                <tr>
+                                    <td class="px-4 py-3 font-medium text-gray-900">
+                                        {{ planif.recette_id.titre }}
+                                    </td>
+                                    <td class="px-4 py-3 text-gray-700">
+                                        {{ planif.utilisateur_id }}
+                                    </td>
+                                    <td class="px-4 py-3 text-gray-700">
+                                        {{ planif.date_prevue|date:"d/m/Y" }}
+                                    </td>
+                                    <td class="px-4 py-3 text-gray-700">
+                                        {{ planif.convives }}
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-800">
+                                            {{ planif.get_etat_display }}
+                                        </span>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <div class="flex flex-wrap gap-2">
+                                            {% if item.peut_marquer_cuisinee %}
+                                                <form method="post">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="type_action" value="transition_planification">
+                                                    <input type="hidden" name="planification_id" value="{{ planif.pk }}">
+                                                    <input type="hidden" name="action" value="marquer_cuisinee">
+                                                    <button type="submit"
+                                                            class="px-3 py-1 rounded bg-green-700 text-white text-xs font-medium hover:bg-green-800">
+                                                        Marquer cuisinée
+                                                    </button>
+                                                </form>
+                                            {% endif %}
+
+                                            {% if item.peut_annuler %}
+                                                <form method="post">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="type_action" value="transition_planification">
+                                                    <input type="hidden" name="planification_id" value="{{ planif.pk }}">
+                                                    <input type="hidden" name="action" value="annuler">
+                                                    <button type="submit"
+                                                            class="px-3 py-1 rounded bg-red-600 text-white text-xs font-medium hover:bg-red-700">
+                                                        Annuler
+                                                    </button>
+                                                </form>
+                                            {% endif %}
+
+                                            {% if not item.peut_marquer_cuisinee and not item.peut_annuler %}
+                                                <span class="text-xs text-gray-400">Aucune action</span>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endwith %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-sm text-gray-500">Aucune planification enregistrée pour le moment.</p>
+        {% endif %}
+    </section>
+
+    <!-- Section 2 : Publication des recettes -->
+    <section class="bg-white rounded-lg shadow border border-gray-200 p-6">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">État de publication des recettes</h2>
+
+        {% if recettes %}
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200 text-sm">
+                    <thead class="bg-gray-50 text-left text-gray-700">
+                        <tr>
+                            <th class="px-4 py-3 font-semibold">Titre</th>
+                            <th class="px-4 py-3 font-semibold">Catégorie</th>
+                            <th class="px-4 py-3 font-semibold">État actuel</th>
+                            <th class="px-4 py-3 font-semibold">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        {% for recette in recettes %}
+                            <tr>
+                                <td class="px-4 py-3 font-medium text-gray-900">
+                                    <a href="{% url 'recette_detail' recette.pk %}" class="hover:underline text-green-800">
+                                        {{ recette.titre }}
+                                    </a>
+                                </td>
+                                <td class="px-4 py-3 text-gray-700">
+                                    {{ recette.categorie_id.nom }}
+                                </td>
+                                <td class="px-4 py-3">
+                                    {% if recette.etat_publication == "publiee" %}
+                                        <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
+                                            Publiée
+                                        </span>
+                                    {% else %}
+                                        <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800">
+                                            Brouillon
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td class="px-4 py-3">
+                                    <form method="post">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="type_action" value="basculer_publication">
+                                        <input type="hidden" name="recette_id" value="{{ recette.pk }}">
+                                        {% if recette.etat_publication == "publiee" %}
+                                            <button type="submit"
+                                                    class="px-3 py-1 rounded bg-amber-600 text-white text-xs font-medium hover:bg-amber-700">
+                                                Passer en brouillon
+                                            </button>
+                                        {% else %}
+                                            <button type="submit"
+                                                    class="px-3 py-1 rounded bg-green-700 text-white text-xs font-medium hover:bg-green-800">
+                                                Publier
+                                            </button>
+                                        {% endif %}
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-sm text-gray-500">Aucune recette disponible.</p>
+        {% endif %}
+    </section>
+</div>
+{% endblock %}

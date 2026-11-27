@@ -2,88 +2,87 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="fr">
-    <head> <!-- Paramettres de la page -->
+    <head>
+        <!-- Paramètres de la page -->
         <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!--permets s'afficher correctement sur les écrans pc, tel,tablette -->
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>{% block title %}Mes Recettes{% endblock %}</title>
-        <!-- Framework CSS pour le design-->>
-        <script src="https://cdn.tailwindcss.com"></script> <!-- Connection avec Tailwind -->
-        <!-- Chargement de notre CSS pérsonnalisé-->
-         <linc rel="stylesheet" href="{% static 'css/style.css' %}">
+
+        <!-- Framework CSS pour le design -->
+        <script src="https://cdn.tailwindcss.com"></script>
+
+        <!-- Chargement de notre CSS personnalisé -->
+        <link rel="stylesheet" href="{% static 'css/style.css' %}">
     </head>
-    
-    <body class="bg-gray-50 min-h-screen flex flex-col"> <!-- Ouvre la partie visible de l'application -->
-        <!-- En-tête de l'application-->
+
+    <body class="bg-gray-50 min-h-screen flex flex-col">
+        <!-- En-tête de l'application -->
         <header class="bg-green-700 text-white shadow">
             <nav class="max-w-6xl mx-auto p-4 flex flex-wrap justify-between items-center gap-4">
-                <a href="/" class="text-2xl font-bold">
+                <a href="{% url 'accueil' %}" class="text-2xl font-bold hover:text-green-100 transition">
                     Mes Recettes
                 </a>
 
-                <!-- Liens de navigation-->
+                <!-- Liens de navigation -->
                 <div class="flex flex-wrap gap-4 items-center">
-                    
-                    <a href="/catalogue/">Catalogue</a>
+                    <a href="{% url 'accueil' %}" class="hover:underline">Accueil</a>
+                    <a href="{% url 'catalogue' %}" class="hover:underline">Catalogue</a>
 
-                <!-- Navigation pour les utilisateurs connectés -->
-                {% if user.is_authenticated %}
-                    <a href="/mes-demandes/">Mes demandes</a>
+                    <!-- Navigation pour les utilisateurs connectés -->
+                    {% if user.is_authenticated %}
+                        {% if user.role != 'gestionnaire' %}
+                            <a href="/mes-demandes/" class="hover:underline">Mes demandes</a>
+                        {% endif %}
+                        
+                        <a href="{% url 'recherche_recettes' %}" class="hover:underline">Recherche</a>
+                        
 
-                <!-- Accès réservé au gestionnaire -->
-                {% if user.role == 'gestionnaire' %}
-                    <a href="/gestion/">Gestion</a>
-                {% endif %}
 
-                <!-- Formulaire de déconnexion -->
-                <form method="post" action="/deconnexion/">
-                    {% csrf_token %}
-                    <button type="submit">Déconnexion</button>
-                </form>
 
-                {% else %}
-                    <!-- Navigation pour les visiteurs -->
-                    <a href="/connexion/">Connexion</a>
-                    <a href="/inscription/">Inscription</a>
-                {% endif %}
+                        <!-- Accès réservé au gestionnaire -->
+                        {% if user.role == 'gestionnaire' %}
+                            <a href="/gestion/" class="hover:underline">Gestion</a>
+                        {% endif %}
 
-                <!-- Fin des liens de navigation -->
+                        <!-- Formulaire de déconnexion -->
+                        <form method="post" action="/deconnexion/" class="inline">
+                            {% csrf_token %}
+                            <button type="submit" class="bg-green-800 hover:bg-green-900 px-3 py-1.5 rounded text-sm font-medium transition">
+                                Déconnexion
+                            </button>
+                        </form>
+                    {% else %}
+                        <!-- Navigation pour les visiteurs -->
+                        <a href="/accounts/connexion/" class="hover:underline">Connexion</a>
+                        <a href="/accounts/inscription/" class="bg-white text-green-800 hover:bg-green-50 px-3 py-1.5 rounded text-sm font-semibold transition">
+                            Inscription
+                        </a>
+                    {% endif %}
                 </div>
             </nav>
         </header>
-        
-            <!-- Contenu principal de l'application -->
-            <main class="max-w-6xl mx-auto w-full p-6 flex-grow">
 
-                <!-- Messages de confirmation ou d'erreur -->
-                {% if messages %}
-                    {% for message in messages %}
-                        <div class="bg-blue-100 p-4 rounded mb-4" role="alert">
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                {% endif %}
+        <!-- Contenu principal de l'application -->
+        <main class="max-w-6xl mx-auto w-full p-6 flex-grow">
 
-                <!-- Contenu spécifique de chaque page -->
-                {% block content %}
-                {% endblock %}
+            <!-- Messages de confirmation ou d'erreur -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="bg-blue-100 text-blue-900 p-4 rounded mb-4" role="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
 
-            </main>
+            <!-- Contenu spécifique de chaque page -->
+            {% block content %}
+            {% endblock %}
 
-                <!-- Pied de page de l'application -->
-<footer class="bg-gray-800 text-white text-center p-4">
-    <p>© 2026 Mes Recettes - Projet Django</p>
-</footer>
+        </main>
 
-<!-- Fin du document HTML -->
+        <!-- Pied de page de l'application -->
+        <footer class="bg-gray-800 text-white text-center p-4">
+            <p>© 2026 Mes Recettes - Projet Django</p>
+        </footer>
     </body>
 </html>
-
-
-
-
-
-
-
-
-
-

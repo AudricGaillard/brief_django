@@ -19,22 +19,21 @@ Le dépôt sépare les données fournies, la documentation/livrables et le proje
 ```text
 brief_django/
 ├── docs/                  # Schéma de base de données et scénario de vérification
-├── donnees/
-│   └── recettes/          # Jeu de données CSV (non modifié) et script de contrôle
-│       ├── actions.csv
-│       ├── categories.csv
-│       ├── ingredients.csv
-│       ├── objets.csv
-│       ├── utilisateurs.csv
-│       ├── README.md
-│       └── verifier_donnees.py
 ├── Recettes/              # Projet Django (contient manage.py et db.sqlite3)
 │   ├── accounts/          # Authentification, inscription et profils/rôles
-│   ├── app/               # Application applicative
 │   ├── data/              # Commande de gestion charger_donnees
 │   │   └── management/
 │   ├── home/              # Page d'accueil et catalogue
 │   ├── recettes/          # Modèles recettes/ingrédients/planifications et gestion
+|   |    └── donnees/       # Dossier non publiée
+│   |        └── recettes/          # Jeu de données CSV (non modifié) et script de contrôle
+│   |           ├── actions.csv
+│   |           ├── categories.csv
+│   |           ├── ingredients.csv
+│   |           ├── objets.csv
+│   |           ├── utilisateurs.csv
+│   |           ├── README.md
+│   |           └── verifier_donnees.py
 │   ├── static/            # Fichiers statiques (CSS, etc.)
 │   ├── templates/         # Gabarit commun (base.html)
 │   └── manage.py
@@ -104,8 +103,6 @@ python manage.py runserver
 ---
 
 ## Choix techniques et justifications
-
-*À compléter:*
 
 - **Découpage en applications Django (`accounts`, `home`, `recettes`, `data`, `app`) :** *[Ex. : sépare la gestion des comptes et rôles de la logique métier des recettes et des planifications afin de garder des vues et modèles lisibles.]*
 - **Représentation du rôle et de l'information propre au compte (`role` et `regime`) :** *[À compléter : modèle de profil lié à l'utilisateur ou modèle utilisateur étendu, et gestion des droits côté serveur.]*
